@@ -37,7 +37,7 @@ namespace Core.Repositories
             }
         }
 
-        public IEnumerable<T> GetAll() => _items;
+        public IEnumerable<T> GetAll() => new List<T>(_items);
 
         public T? Find(Func<T, bool> predicate) => _items.FirstOrDefault(predicate);
 

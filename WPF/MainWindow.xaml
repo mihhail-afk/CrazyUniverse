@@ -39,6 +39,9 @@
                 <Button Content="Add Penguin" Command="{Binding AddPenguinCommand}" Width="110" Margin="2"/>
                 <Button Content="Add Monkey" Command="{Binding AddMonkeyCommand}" Width="110" Margin="2"/>
                 <Button Content="Add Lion" Command="{Binding AddLionCommand}" Width="110" Margin="2"/>
+                <Button Content="Add Dragon" Command="{Binding AddDragonCommand}" Width="110" Margin="2"/>
+                <Button Content="Add Phoenix" Command="{Binding AddPhoenixCommand}" Width="110" Margin="2"/>
+                <Button Content="Add Yeti" Command="{Binding AddYetiCommand}" Width="110" Margin="2"/>
                 <Button Content="Remove" Command="{Binding RemoveCommand}" Width="110" Margin="2"/>
                 <Button Content="CrazyAction" Command="{Binding CrazyActionCommand}" Width="110" Margin="2"/>
                 <Button Content="Sort by Energy" Command="{Binding SortCommand}" Width="110" Margin="2"/>
