@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:vm="clr-namespace:WPF.ViewModels"
         mc:Ignorable="d"
-        Title="Crazy Universe (Vol. 2)" Height="500" Width="800">
+        Title="CrazyUniverse" Height="550" Width="950">
 
     <Window.DataContext>
         <vm:MainViewModel/>
@@ -13,45 +13,64 @@
 
     <Grid Margin="10">
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="2*"/>
-            <ColumnDefinition Width="3*"/>
+            <ColumnDefinition Width="280"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="300"/>
         </Grid.ColumnDefinitions>
 
         <StackPanel Grid.Column="0" Margin="0,0,10,0">
-            <TextBlock Text="Search:" FontWeight="Bold" Margin="0,0,0,3"/>
-            <TextBox Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,10"/>
+            <TextBlock Text="Animals Management" FontWeight="Bold" Margin="0,0,0,5"/>
 
-            <TextBlock Text="Animals:" FontWeight="Bold" Margin="0,0,0,3"/>
-            <ListBox ItemsSource="{Binding FilteredAnimals}" 
-                     SelectedItem="{Binding SelectedAnimal, Mode=TwoWay}" 
-                     Height="180" Margin="0,0,0,10">
+            <Button Content="Add Penguin" Command="{Binding AddPenguinCommand}" Margin="0,2"/>
+            <Button Content="Add Monkey" Command="{Binding AddMonkeyCommand}" Margin="0,2"/>
+            <Button Content="Add Lion" Command="{Binding AddLionCommand}" Margin="0,2"/>
+            <Button Content="Add Dragon" Command="{Binding AddDragonCommand}" Margin="0,2"/>
+            <Button Content="Add Phoenix" Command="{Binding AddPhoenixCommand}" Margin="0,2"/>
+            <Button Content="Add Yeti" Command="{Binding AddYetiCommand}" Margin="0,2"/>
+
+            <Separator Margin="0,10"/>
+
+            <TextBlock Text="Simulation Settings" FontWeight="Bold" Margin="0,0,0,5"/>
+            <TextBlock Text="Workload (steps):"/>
+            <TextBox Text="{Binding Workload, UpdateSourceTrigger=PropertyChanged}" Margin="0,2,0,5"/>
+            <CheckBox Content="Parallel Mode" IsChecked="{Binding IsParallel}" Margin="0,2,0,10"/>
+
+            <Button Content="Start Simulation" Command="{Binding StartSimulationCommand}" Background="LightGreen" Margin="0,2"/>
+            <Button Content="Cancel" Command="{Binding CancelSimulationCommand}" Background="LightCoral" Margin="0,2,0,10"/>
+
+            <TextBlock Text="Search:" Margin="0,5,0,2"/>
+            <TextBox Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"/>
+        </StackPanel>
+
+        <Grid Grid.Column="1" Margin="5,0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <ListBox ItemsSource="{Binding FilteredAnimals}" SelectedItem="{Binding SelectedAnimal}" Margin="0,0,0,10">
                 <ListBox.ItemTemplate>
                     <DataTemplate>
-                        <StackPanel Orientation="Horizontal">
-                            <TextBlock Text="{Binding Name}" FontWeight="Bold" Margin="0,0,10,0"/>
-                            <TextBlock Text="{Binding Energy, StringFormat='Energy: {0}'}" Foreground="Gray"/>
-                        </StackPanel>
+                        <TextBlock Text="{Binding}" VerticalAlignment="Center"/>
                     </DataTemplate>
                 </ListBox.ItemTemplate>
             </ListBox>
 
-            <WrapPanel>
-                <Button Content="Add Penguin" Command="{Binding AddPenguinCommand}" Width="110" Margin="2"/>
-                <Button Content="Add Monkey" Command="{Binding AddMonkeyCommand}" Width="110" Margin="2"/>
-                <Button Content="Add Lion" Command="{Binding AddLionCommand}" Width="110" Margin="2"/>
-                <Button Content="Add Dragon" Command="{Binding AddDragonCommand}" Width="110" Margin="2"/>
-                <Button Content="Add Phoenix" Command="{Binding AddPhoenixCommand}" Width="110" Margin="2"/>
-                <Button Content="Add Yeti" Command="{Binding AddYetiCommand}" Width="110" Margin="2"/>
-                <Button Content="Remove" Command="{Binding RemoveCommand}" Width="110" Margin="2"/>
-                <Button Content="CrazyAction" Command="{Binding CrazyActionCommand}" Width="110" Margin="2"/>
-                <Button Content="Sort by Energy" Command="{Binding SortCommand}" Width="110" Margin="2"/>
-                <Button Content="Group by Type" Command="{Binding GroupCommand}" Width="110" Margin="2"/>
-            </WrapPanel>
-        </StackPanel>
+            <StackPanel Grid.Row="1" Orientation="Horizontal">
+                <Button Content="Remove Selected" Command="{Binding RemoveCommand}" Width="120" Margin="0,0,10,0"/>
+                <Button Content="Crazy Action" Command="{Binding CrazyActionCommand}" Width="100" Margin="0,0,10,0"/>
+                <Button Content="Sort by Energy" Command="{Binding SortCommand}" Width="100" Margin="0,0,10,0"/>
+                <Button Content="Group by Type" Command="{Binding GroupCommand}" Width="100"/>
+            </StackPanel>
+        </Grid>
 
-        <DockPanel Grid.Column="1">
-            <TextBlock Text="Event Log:" FontWeight="Bold" DockPanel.Dock="Top" Margin="0,0,0,3"/>
-            <ListBox ItemsSource="{Binding LogEntries}"/>
-        </DockPanel>
+        <TabControl Grid.Column="2" Margin="10,0,0,0">
+            <TabItem Header="Reports">
+                <ListBox ItemsSource="{Binding ReportEntries}" Margin="5"/>
+            </TabItem>
+            <TabItem Header="Logs">
+                <ListBox ItemsSource="{Binding LogEntries}" Margin="5"/>
+            </TabItem>
+        </TabControl>
     </Grid>
 </Window>

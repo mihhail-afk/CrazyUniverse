@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Windows.Input;
 using Core.Models;
 using Core.Repositories;
@@ -21,9 +24,13 @@ namespace WPF.ViewModels
 
         private BaseAnimal? _selectedAnimal;
         private string _searchText = string.Empty;
+        private int _workload = 5;
+        private bool _isParallel;
+        private CancellationTokenSource? _cts;
 
         public ObservableCollection<BaseAnimal> CurrentAnimals { get; } = new();
         public ObservableCollection<string> LogEntries { get; } = new();
+        public ObservableCollection<string> ReportEntries { get; } = new();
 
         public BaseAnimal? SelectedAnimal
         {
@@ -43,6 +50,26 @@ namespace WPF.ViewModels
                 _searchText = value;
                 OnPropertyChanged();
                 OnPropertyChanged(nameof(FilteredAnimals));
+            }
+        }
+
+        public int Workload
+        {
+            get => _workload;
+            set
+            {
+                _workload = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public bool IsParallel
+        {
+            get => _isParallel;
+            set
+            {
+                _isParallel = value;
+                OnPropertyChanged();
             }
         }
 
@@ -71,6 +98,8 @@ namespace WPF.ViewModels
 
         public ICommand RemoveCommand { get; }
         public ICommand CrazyActionCommand { get; }
+        public ICommand StartSimulationCommand { get; }
+        public ICommand CancelSimulationCommand { get; }
 
         public MainViewModel()
         {
@@ -112,6 +141,9 @@ namespace WPF.ViewModels
                 RefreshCurrentList();
             }, _ => SelectedAnimal != null);
 
+            StartSimulationCommand = new RelayCommand(async _ => await RunSimulationAsync());
+            CancelSimulationCommand = new RelayCommand(_ => _cts?.Cancel());
+
             SortCommand = new RelayCommand(_ =>
             {
                 var sorted = FilteredAnimals.OrderByDescending(a => a.Energy).ToList();
@@ -140,6 +172,66 @@ namespace WPF.ViewModels
             _yetiRepo.Add(new Yeti("Abominable"));
 
             RefreshCurrentList();
+        }
+
+        private async Task RunSimulationAsync()
+        {
+            _cts = new CancellationTokenSource();
+            ReportEntries.Clear();
+            var stopwatch = Stopwatch.StartNew();
+
+            var selectedList = CurrentAnimals.Take(3).ToList();
+            if (!selectedList.Any()) return;
+
+            try
+            {
+                if (IsParallel)
+                {
+                    var tasks = selectedList.Select(animal => Task.Run(() =>
+                    {
+                        try
+                        {
+                            return animal.SimulateActivity(Workload, _cts.Token);
+                        }
+                        catch (OperationCanceledException)
+                        {
+                            return $"{animal.Name}: Cancelled.";
+                        }
+                        catch (Exception ex)
+                        {
+                            return $"{animal.Name}: Error - {ex.Message}";
+                        }
+                    }, _cts.Token));
+
+                    var results = await Task.WhenAll(tasks);
+                    foreach (var res in results) ReportEntries.Add(res);
+                }
+                else
+                {
+                    foreach (var animal in selectedList)
+                    {
+                        try
+                        {
+                            var res = animal.SimulateActivity(Workload, _cts.Token);
+                            ReportEntries.Add(res);
+                        }
+                        catch (OperationCanceledException)
+                        {
+                            ReportEntries.Add($"{animal.Name}: Cancelled.");
+                            break;
+                        }
+                        catch (Exception ex)
+                        {
+                            ReportEntries.Add($"{animal.Name}: Error - {ex.Message}");
+                        }
+                    }
+                }
+            }
+            finally
+            {
+                stopwatch.Stop();
+                ReportEntries.Add($"Total execution time: {stopwatch.ElapsedMilliseconds} ms");
+            }
         }
 
         private void SetupEvents<T>(Repository<T> repo) where T : BaseAnimal

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 
 namespace Core.Models
 {
@@ -42,6 +43,16 @@ namespace Core.Models
         }
 
         public abstract string CrazyAction();
+
+        public string SimulateActivity(int workload, CancellationToken cancellationToken)
+        {
+            for (int i = 1; i <= workload; i++)
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+                Thread.Sleep(300);
+            }
+            return $"{Name} successfully completed simulation ({workload} steps).";
+        }
 
         public override string ToString() => $"{Name} (Energy: {Energy}%)";
     }
