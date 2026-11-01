@@ -15,6 +15,9 @@ namespace WPF.ViewModels
         private readonly Repository<Penguin> _penguinRepo = new();
         private readonly Repository<Monkey> _monkeyRepo = new();
         private readonly Repository<SuperLion> _lionRepo = new();
+        private readonly Repository<Dragon> _dragonRepo = new();
+        private readonly Repository<Phoenix> _phoenixRepo = new();
+        private readonly Repository<Yeti> _yetiRepo = new();
 
         private BaseAnimal? _selectedAnimal;
         private string _searchText = string.Empty;
@@ -62,6 +65,10 @@ namespace WPF.ViewModels
         public ICommand AddPenguinCommand { get; }
         public ICommand AddMonkeyCommand { get; }
         public ICommand AddLionCommand { get; }
+        public ICommand AddDragonCommand { get; }
+        public ICommand AddPhoenixCommand { get; }
+        public ICommand AddYetiCommand { get; }
+
         public ICommand RemoveCommand { get; }
         public ICommand CrazyActionCommand { get; }
 
@@ -70,16 +77,26 @@ namespace WPF.ViewModels
             SetupEvents(_penguinRepo);
             SetupEvents(_monkeyRepo);
             SetupEvents(_lionRepo);
+            SetupEvents(_dragonRepo);
+            SetupEvents(_phoenixRepo);
+            SetupEvents(_yetiRepo);
 
             AddPenguinCommand = new RelayCommand(_ => _penguinRepo.Add(new Penguin("Pingu", 100)));
             AddMonkeyCommand = new RelayCommand(_ => _monkeyRepo.Add(new Monkey("Abu", 100)));
             AddLionCommand = new RelayCommand(_ => _lionRepo.Add(new SuperLion("Simba", 100)));
+            AddDragonCommand = new RelayCommand(_ => _dragonRepo.Add(new Dragon("Smaug")));
+            AddPhoenixCommand = new RelayCommand(_ => _phoenixRepo.Add(new Phoenix("Fawkes")));
+            AddYetiCommand = new RelayCommand(_ => _yetiRepo.Add(new Yeti("Abominable")));
 
             RemoveCommand = new RelayCommand(_ =>
             {
                 if (SelectedAnimal is Penguin p) _penguinRepo.Remove(p);
                 else if (SelectedAnimal is Monkey m) _monkeyRepo.Remove(m);
                 else if (SelectedAnimal is SuperLion l) _lionRepo.Remove(l);
+                else if (SelectedAnimal is Dragon d) _dragonRepo.Remove(d);
+                else if (SelectedAnimal is Phoenix ph) _phoenixRepo.Remove(ph);
+                else if (SelectedAnimal is Yeti y) _yetiRepo.Remove(y);
+
                 RefreshCurrentList();
             }, _ => SelectedAnimal != null);
 
@@ -88,6 +105,10 @@ namespace WPF.ViewModels
                 if (SelectedAnimal is Penguin p) _penguinRepo.PerformCrazyAction(p);
                 else if (SelectedAnimal is Monkey m) _monkeyRepo.PerformCrazyAction(m);
                 else if (SelectedAnimal is SuperLion l) _lionRepo.PerformCrazyAction(l);
+                else if (SelectedAnimal is Dragon d) _dragonRepo.PerformCrazyAction(d);
+                else if (SelectedAnimal is Phoenix ph) _phoenixRepo.PerformCrazyAction(ph);
+                else if (SelectedAnimal is Yeti y) _yetiRepo.PerformCrazyAction(y);
+
                 RefreshCurrentList();
             }, _ => SelectedAnimal != null);
 
@@ -114,6 +135,10 @@ namespace WPF.ViewModels
 
             _penguinRepo.Add(new Penguin("Kowalski", 90));
             _penguinRepo.Add(new Penguin("Rico", 85));
+            _dragonRepo.Add(new Dragon("Smaug"));
+            _phoenixRepo.Add(new Phoenix("Fawkes"));
+            _yetiRepo.Add(new Yeti("Abominable"));
+
             RefreshCurrentList();
         }
 
@@ -143,6 +168,10 @@ namespace WPF.ViewModels
             foreach (var item in _penguinRepo.GetAll()) CurrentAnimals.Add(item);
             foreach (var item in _monkeyRepo.GetAll()) CurrentAnimals.Add(item);
             foreach (var item in _lionRepo.GetAll()) CurrentAnimals.Add(item);
+            foreach (var item in _dragonRepo.GetAll()) CurrentAnimals.Add(item);
+            foreach (var item in _phoenixRepo.GetAll()) CurrentAnimals.Add(item);
+            foreach (var item in _yetiRepo.GetAll()) CurrentAnimals.Add(item);
+
             OnPropertyChanged(nameof(FilteredAnimals));
         }
 
